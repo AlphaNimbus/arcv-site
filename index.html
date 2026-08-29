@@ -349,7 +349,7 @@ h1 em{font-style:italic;color:var(--bronze-lt)}
     <p>Ramati Art Group has worked where art meets the technology used to look at it since 2018. ARcv is what we are building now.</p>
     <div class="meta">
       <span>Established 2018 &middot; Lagos</span>
-      <span><a href="mailto:hello@ramati.art">hello@ramati.art</a></span>
+      <span><a href="mailto:hello@arcv.art">hello@arcv.art</a></span>
     </div>
   </footer>
 
@@ -472,7 +472,7 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
     if(!ENDPOINT){
       var lines='Email: '+e+'\nRole: '+w;
       for(var k2 in c) lines+='\n'+k2+': '+c[k2];
-      window.location.href='mailto:hello@ramati.art?subject='+
+      window.location.href='mailto:hello@arcv.art?subject='+
         encodeURIComponent('Early access')+'&body='+encodeURIComponent(lines);
       done('Send the message your mail app just opened.',w,payload); return;
     }
@@ -480,7 +480,7 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
       body:JSON.stringify(payload)})
       .then(function(r){ if(!r.ok) throw 0; done(null,w,payload); })
       .catch(function(){ go.disabled=false; go.textContent='\u2192';
-        sub.textContent=''; alert('That didn\u2019t send \u2014 try hello@ramati.art.'); });
+        sub.textContent=''; alert('That didn\u2019t send \u2014 try hello@arcv.art.'); });
   }
   go.addEventListener('click',send);
   email.addEventListener('keydown',function(ev){ if(ev.key==='Enter') send(); });
