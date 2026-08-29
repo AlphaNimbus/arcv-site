@@ -166,6 +166,7 @@ h1 em{font-style:italic;color:var(--bronze-lt)}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236A655D' fill='none' stroke-width='1.2'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 16px center}
 .line select option{background:#12151A;color:var(--cream)}
+.line-row{display:flex;flex:0 0 auto}
 .line .go{flex:0 0 auto;background:none;border:0;border-left:0;
   color:var(--bronze-lt);padding:0 clamp(18px,2vw,26px);
   font-family:var(--mono);font-size:16px;line-height:1;
@@ -233,7 +234,8 @@ h1 em{font-style:italic;color:var(--bronze-lt)}
   .line{flex-wrap:wrap}
   .line input{flex:1 1 100%;border-bottom:1px solid rgba(240,235,226,.14)}
   .line .sep{display:none}
-  .line select{flex:1 1 auto}
+  .line-row{flex:1 1 100%}
+  .line select{flex:1 1 auto;min-width:0}
   .line .go{border-left:1px solid rgba(240,235,226,.14);padding:0 24px}
 }
 
@@ -308,21 +310,23 @@ textarea.fld{resize:vertical;min-height:88px;line-height:1.55;font-family:var(--
           <input id="email" type="email" inputmode="email" autocomplete="email"
                  placeholder="Email address">
           <span class="sep"></span>
-          <select id="who">
-            <option value="">You are&hellip;</option>
-            <option>Artist</option>
-            <option>Art student or recent graduate</option>
-            <option>Gallery staff</option>
-            <option>Collector or private dealer</option>
-            <option>Framer</option>
-            <option>Fabricator, print studio, or foundry</option>
-            <option>Artwork photographer</option>
-            <option>Art handler or preparator</option>
-            <option>Faculty or technician</option>
-            <option>Online marketplace seller</option>
-            <option>Other / institutional</option>
-          </select>
-          <button class="go" id="go" type="button" aria-label="Request early access">&rarr;</button>
+          <div class="line-row">
+            <select id="who">
+              <option value="">You are&hellip;</option>
+              <option>Artist</option>
+              <option>Art student or recent graduate</option>
+              <option>Gallery staff</option>
+              <option>Collector or private dealer</option>
+              <option>Framer</option>
+              <option>Fabricator, print studio, or foundry</option>
+              <option>Artwork photographer</option>
+              <option>Art handler or preparator</option>
+              <option>Faculty or technician</option>
+              <option>Online marketplace seller</option>
+              <option>Other / institutional</option>
+            </select>
+            <button class="go" id="go" type="button" aria-label="Request early access">&rarr;</button>
+          </div>
         </div>
         <p class="note">A private correspondence. One click to stop, at any point.</p>
         <p class="done" id="done" role="status" aria-live="polite">Noted.<small id="doneSub">Your address has been noted.</small></p>
