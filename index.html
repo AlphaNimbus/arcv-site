@@ -197,7 +197,7 @@ h1 em{font-style:italic;color:var(--bronze-lt)}
 .more.answered .pills{display:none}
 
 /* Enrichment. Same field language as step one, revealed after it. */
-.extra{display:block;margin-top:18px;padding-top:16px;
+.extra{margin-top:18px;padding-top:16px;
   border-top:1px solid rgba(240,235,226,.08);
   animation:rise .6s var(--ease) both}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
@@ -258,6 +258,26 @@ h1 em{font-style:italic;color:var(--bronze-lt)}
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;
     animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* ── discovery survey ─────────────────────────────────────────
+   Role-branched, one question at a time. A bar shows progress
+   and a line of encouragement appears near the end — the two
+   things that keep a ten-question form from feeling like one. */
+.sprog{margin:2px 0 4px}
+.sprog-track{height:1px;background:rgba(240,235,226,.14);position:relative;overflow:hidden}
+.sprog-fill{position:absolute;left:0;top:0;height:100%;width:0%;background:var(--bronze-lt);
+  transition:width .45s var(--ease)}
+.sprog-label{margin:9px 0 0;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--dim)}
+.sq-prompt{margin:16px 0 14px;font-family:var(--display);font-size:clamp(17px,2.2vw,20px);
+  font-weight:300;color:var(--cream);line-height:1.42;max-width:52ch;
+  animation:rise .5s var(--ease) both}
+.sq-multi{display:flex;flex-direction:column;gap:1px;margin:2px 0 6px}
+.sq-multi .opt{margin-top:9px}
+textarea.fld{resize:vertical;min-height:88px;line-height:1.55;font-family:var(--body);
+  margin-bottom:2px}
+.sq-encourage{margin:13px 0 0;font-size:12px;color:var(--bronze-lt);font-style:italic}
+.sq-intro{margin:13px 0 0;font-size:12.5px;color:var(--dim);line-height:1.5;max-width:52ch}
 </style>
 </head>
 <body>
@@ -291,54 +311,53 @@ h1 em{font-style:italic;color:var(--bronze-lt)}
           <select id="who">
             <option value="">You are&hellip;</option>
             <option>Artist</option>
-            <option>Gallery or dealer</option>
-            <option>Museum or collection</option>
-            <option>Collector</option>
-            <option>Conservator</option>
-            <option>Insurance or logistics</option>
-            <option>Press</option>
-            <option>Other</option>
+            <option>Art student or recent graduate</option>
+            <option>Gallery staff</option>
+            <option>Collector or private dealer</option>
+            <option>Framer</option>
+            <option>Fabricator, print studio, or foundry</option>
+            <option>Artwork photographer</option>
+            <option>Art handler or preparator</option>
+            <option>Faculty or technician</option>
+            <option>Online marketplace seller</option>
+            <option>Other / institutional</option>
           </select>
           <button class="go" id="go" type="button" aria-label="Request early access">&rarr;</button>
         </div>
         <p class="note">A private correspondence. One click to stop, at any point.</p>
         <p class="done" id="done" role="status" aria-live="polite">Noted.<small id="doneSub">Your address has been noted.</small></p>
         <div class="more" id="more" hidden>
-          <p class="ask" id="ask"></p>
+          <p class="sq-intro" id="sqIntro"></p>
+          <div class="sprog" id="sprog" hidden>
+            <div class="sprog-track"><div class="sprog-fill" id="sprogFill"></div></div>
+            <p class="sprog-label" id="sprogLabel"></p>
+          </div>
+          <p class="sq-prompt" id="sqPrompt"></p>
           <div class="pills" id="pills"></div>
+          <div class="sq-multi" id="sqMulti" hidden></div>
+          <textarea class="fld" id="sqText" hidden placeholder="Type your answer&hellip;"></textarea>
+          <button class="go2" id="sqNext" type="button" hidden>Continue</button>
+          <p class="sq-encourage" id="sqEncourage" hidden></p>
 
-          <!-- Asked only once the address is already banked, so none of it
-               costs a signup. A name and a country are what make a survey
-               invitation readable rather than a circular. -->
-          <div class="extra" id="extra">
+          <!-- Shown only if the respondent says yes to a conversation, so
+               contact details are never a condition of finishing the survey. -->
+          <div class="extra" id="extra" hidden>
             <div class="grid2">
               <div>
                 <label class="sr" for="nm">Name</label>
                 <input class="fld" id="nm" type="text" autocomplete="name" placeholder="Name">
               </div>
               <div>
-                <label class="sr" for="ctry">Country</label>
-                <input class="fld" id="ctry" type="text" autocomplete="country-name"
-                       placeholder="Country" list="ctries">
-                <datalist id="ctries">
-                  <option>Nigeria</option><option>Ghana</option><option>Kenya</option>
-                  <option>South Africa</option><option>Senegal</option><option>C&ocirc;te d&rsquo;Ivoire</option>
-                  <option>Egypt</option><option>Morocco</option><option>United States</option>
-                  <option>United Kingdom</option><option>France</option><option>Germany</option>
-                  <option>Netherlands</option><option>Belgium</option><option>Italy</option>
-                  <option>Spain</option><option>Switzerland</option><option>United Arab Emirates</option>
-                  <option>Canada</option><option>Brazil</option><option>China</option>
-                  <option>Japan</option><option>India</option><option>Australia</option>
-                </datalist>
+                <label class="sr" for="wa">WhatsApp or Telegram</label>
+                <input class="fld" id="wa" type="text" inputmode="tel" autocomplete="tel"
+                       placeholder="WhatsApp or Telegram">
               </div>
               <div class="span2">
-                <label class="sr" for="org">Studio or organisation</label>
-                <input class="fld" id="org" type="text" autocomplete="organization"
-                       placeholder="Studio or organisation &mdash; optional">
+                <label class="sr" for="em2">Email</label>
+                <input class="fld" id="em2" type="email" placeholder="Email &mdash; optional">
               </div>
             </div>
-            <label class="opt"><input type="checkbox" id="cons" checked><span>Write to me while you build it, and ask me questions along the way.</span></label>
-            <button class="go2" id="go2" type="button">Save</button>
+            <button class="go2" id="go2" type="button">Send</button>
             <p class="thx" id="thx">Thank you. We&rsquo;ll be in touch.</p>
           </div>
         </div>
@@ -365,11 +384,17 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
   var go=document.getElementById('go'), email=document.getElementById('email'),
       who=document.getElementById('who'), enrol=document.getElementById('enrol'),
       sub=document.getElementById('doneSub'),
-      more=document.getElementById('more'), ask=document.getElementById('ask'),
-      pills=document.getElementById('pills'), extra=document.getElementById('extra'),
-      nm=document.getElementById('nm'), ctry=document.getElementById('ctry'),
-      org=document.getElementById('org'), cons=document.getElementById('cons'),
-      go2=document.getElementById('go2');
+      more=document.getElementById('more'),
+      sqIntro=document.getElementById('sqIntro'),
+      sprog=document.getElementById('sprog'), sprogFill=document.getElementById('sprogFill'),
+      sprogLabel=document.getElementById('sprogLabel'),
+      sqPrompt=document.getElementById('sqPrompt'),
+      pills=document.getElementById('pills'), sqMulti=document.getElementById('sqMulti'),
+      sqText=document.getElementById('sqText'), sqNext=document.getElementById('sqNext'),
+      sqEncourage=document.getElementById('sqEncourage'),
+      extra=document.getElementById('extra'),
+      nm=document.getElementById('nm'), wa=document.getElementById('wa'),
+      em2=document.getElementById('em2'), go2=document.getElementById('go2');
   function ok(v){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
 
   /* Everything here is already in the browser. None of it costs a field,
@@ -389,79 +414,278 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
     };
   }
 
-  /* One question, asked after they have already committed — the cheapest
-     moment there is. Different roles are worth different questions. */
-  var FOLLOW={
-    'Artist':['How many finished works exist?',['Under 10','10–50','50–150','150+']],
-    'Gallery or dealer':['Works handled a year?',['Under 25','25–100','100–500','500+']],
-    'Museum or collection':['Is condition documentation a budgeted line?',['Yes','No','Not sure']],
-    'Collector':['How many works do you own?',['1–5','6–20','21–100','100+']],
-    'Conservator':['Works assessed a year?',['Under 25','25–100','100+']],
-    'Insurance or logistics':['Do you receive condition reports today?',['Always','Sometimes','Never']]
+  /* Blind instruments — nothing here names the product, the method, or the
+     problem we think we're solving. Whatever a respondent mentions unprompted
+     is what actually matters to them; whatever they omit is what they don't
+     currently think about. See Discovery Surveys, Ramati Art Group. */
+  var SURVEYS={
+    'Artist':[
+      {id:'q1',type:'single',q:"How long have you been selling your work?",
+        opts:['Under 2 years','2–5','5–10','10–20','20+']},
+      {id:'q2',type:'single',q:"In the last 12 months, roughly how many works did you sell?",
+        opts:['0','1–3','4–10','11–25','26–50','50+']},
+      {id:'q3',type:'single',q:"What was your most recent sale worth, in USD?",
+        opts:['Under $200','$200–500','$500–1,500','$1,500–5,000','$5,000–15,000','$15,000+']},
+      {id:'q4',type:'text',q:"Think about the last work you finished. Walk me through everything you did with it between finishing it and it leaving your studio."},
+      {id:'q5',type:'text',q:"What's the most annoying part of selling a work?"},
+      {id:'q6',type:'text',q:"Why is that part hard? What makes it that way?"},
+      {id:'q7',type:'single',q:"In the last 12 months, has a sale fallen through or gone quiet after the buyer showed real interest?",
+        opts:['Yes, more than once','Yes, once','No',"I don't sell directly"]},
+      {id:'q8',type:'multi',q:"What do you currently pay for, in any amount, that helps you sell rather than make?",
+        opts:['Website or portfolio','Ads','Photography of your work','Framing','Shipping insurance','An agent or gallery commission','Nothing']},
+      {id:'q9',type:'single',q:"What's the most you've paid in one go for something that made selling easier?",
+        opts:['Nothing','Under $50','$50–200','$200–500','$500+']},
+      {id:'q10',type:'text',q:"If you skipped everything you do to a work after it's finished and just handed it over — what would go wrong?"}
+    ],
+    'Art student or recent graduate':[
+      {id:'q1',type:'single',q:"Where are you?",
+        opts:['Currently studying','Graduated under 2 years ago','2–5 years ago']},
+      {id:'q2',type:'single',q:"What do you mostly make?",
+        opts:['Painting','Works on paper','Sculpture','Photography','Digital','Mixed / other']},
+      {id:'q3',type:'single',q:"Have you sold work?",
+        opts:['Regularly','A few times','Once','Never']},
+      {id:'q4',type:'text',q:"When you finish a piece, what do you do with it? Everything, in order."},
+      {id:'q5',type:'multi',q:"How do you keep track of work you've made?",
+        opts:['Phone camera roll','Instagram','A folder on a computer','A spreadsheet','A website','Notebook',"I don't really"]},
+      {id:'q6',type:'text',q:"What's the hardest part of showing your work to someone who isn't in the room with you?"},
+      {id:'q7',type:'single',q:"Has a tutor, gallery or open call ever asked you for something about a work you couldn't produce?",
+        opts:['Yes','No','Not sure']},
+      {id:'q8',type:'text',q:"If yes — what was it?",
+        showIf:function(a){return a.q7==='Yes'}},
+      {id:'q9',type:'single',q:"Roughly how much do you spend a year on things that aren't materials — documentation, website, entry fees, framing?",
+        opts:['Nothing','Under $100','$100–300','$300–800','$800+']},
+      {id:'q10',type:'text',q:"What do you wish someone had told you to start doing from day one?"}
+    ],
+    'Gallery staff':[
+      {id:'q1',type:'single',q:"Your role?",
+        opts:['Director / owner','Sales','Registrar / inventory','Preparator','Admin','Other']},
+      {id:'q2',type:'single',q:"Roughly how many works pass through your space in a year?",
+        opts:['Under 50','50–200','200–500','500+']},
+      {id:'q3',type:'text',q:"When a work arrives from an artist, what happens to it before it goes on a wall?"},
+      {id:'q4',type:'text',q:"What's the most tedious recurring task in your week?"},
+      {id:'q5',type:'single',q:"In the last year, has a work been damaged, disputed, or come back in a state someone questioned?",
+        opts:['Yes, more than once','Yes, once','No',"I wouldn't know"]},
+      {id:'q6',type:'text',q:"If yes — how was it resolved, and what did you rely on to resolve it?",
+        showIf:function(a){return a.q5==='Yes, more than once'||a.q5==='Yes, once'}},
+      {id:'q7',type:'multi',q:"Who asks you for paperwork about a work, and what do they ask for?",
+        opts:['Buyers','Insurers','Shippers','Auction houses','Artists','Lenders / borrowers','Nobody really']},
+      {id:'q8',type:'text',q:"What have you tried, bought, or subscribed to in order to keep track of inventory or condition?"}
+    ],
+    'Collector or private dealer':[
+      {id:'q1',type:'single',q:"In the last three years, roughly how many works have you bought?",
+        opts:['1–2','3–10','11–30','30+']},
+      {id:'q2',type:'single',q:"Typical price range?",
+        opts:['Under $1,000','$1,000–5,000','$5,000–25,000','$25,000–100,000','$100,000+']},
+      {id:'q3',type:'single',q:"Have you bought a work you never saw in person before paying?",
+        opts:['Yes, several times','Yes, once','No',"No, and I wouldn't"]},
+      {id:'q4',type:'text',q:"Think about the last work you bought. What did you look at, ask for, or check before deciding?"},
+      {id:'q5',type:'text',q:"What's the most uncomfortable part of buying?"},
+      {id:'q6',type:'single',q:"Have you ever bought something that turned out to be different from what you expected — condition, size, attribution, anything?",
+        opts:['Yes','No','Not yet']},
+      {id:'q7',type:'text',q:"If yes — what happened?",
+        showIf:function(a){return a.q6==='Yes'}},
+      {id:'q8',type:'single',q:"Have you ever sold or tried to sell a work you owned?",
+        opts:['Yes, several','Yes, once','No']},
+      {id:'q9',type:'text',q:"If yes — what did the buyer or auction house ask you for that you struggled to produce?",
+        showIf:function(a){return a.q8==='Yes, several'||a.q8==='Yes, once'}},
+      {id:'q10',type:'multi',q:"What paperwork do you keep for a work you own?",
+        opts:['Invoice / receipt','Certificate from the artist','Condition report','Photographs','Insurance schedule','Nothing formal']}
+    ],
+    'Framer':[
+      {id:'q1',type:'single',q:"How many pieces do you handle a month?",
+        opts:['Under 20','20–60','60–150','150+']},
+      {id:'q2',type:'multi',q:"Who brings you work?",
+        opts:['Individual artists','Galleries','Private collectors','Interior designers','Institutions']},
+      {id:'q3',type:'text',q:"When a piece comes in, what do you record about it before you start?"},
+      {id:'q4',type:'single',q:"Has a client ever come back and said a piece was damaged, marked or changed while it was with you?",
+        opts:['Yes, more than once','Yes, once','No']},
+      {id:'q5',type:'text',q:"If yes — how did you settle it?",
+        showIf:function(a){return a.q4==='Yes, more than once'||a.q4==='Yes, once'}},
+      {id:'q6',type:'text',q:"What would make disputes like that easier to settle?"},
+      {id:'q7',type:'single',q:"How often do you photograph work before you touch it?",
+        opts:['Always','Usually','Only for valuable pieces','Rarely','Never']},
+      {id:'q8',type:'text',q:"What made you start doing that — or decide not to?"}
+    ],
+    'Fabricator, print studio, or foundry':[
+      {id:'q1',type:'text',q:"What do you produce, and in what edition sizes?"},
+      {id:'q2',type:'text',q:"When an edition leaves your workshop, what goes with it?"},
+      {id:'q3',type:'text',q:"How do you record which piece is which within an edition?"},
+      {id:'q4',type:'single',q:"Has anyone ever come back years later asking you to confirm something about a piece you made?",
+        opts:['Yes','No']},
+      {id:'q4b',type:'text',q:"If yes — what did they ask?",
+        showIf:function(a){return a.q4==='Yes'}},
+      {id:'q5',type:'text',q:"What would you need in order to answer that question easily?"}
+    ],
+    'Artwork photographer':[
+      {id:'q1',type:'text',q:"Who hires you, and for what?"},
+      {id:'q2',type:'text',q:"Walk me through a typical shoot, setup to delivery."},
+      {id:'q3',type:'text',q:"What's the hardest kind of work to photograph well, and why?"},
+      {id:'q4',type:'text',q:"Do clients ever ask for something a photograph can't give them?"},
+      {id:'q5',type:'text',q:"What do you charge per work or per session?"}
+    ],
+    'Art handler or preparator':[
+      {id:'q1',type:'text',q:"Who do you work for — an institution, a shipper, freelance?"},
+      {id:'q2',type:'text',q:"What do you do before you pick up a work you haven't handled before?"},
+      {id:'q3',type:'text',q:"When something is damaged in transit or installation, what happens next?"},
+      {id:'q4',type:'text',q:"What evidence exists about the state a work was in before you touched it?"},
+      {id:'q5',type:'text',q:"How often does a dispute come down to nobody being sure?"}
+    ],
+    'Faculty or technician':[
+      {id:'q1',type:'text',q:"What do you teach, and at what level?"},
+      {id:'q2',type:'text',q:"What do you tell students to do with a work once it's finished?"},
+      {id:'q3',type:'text',q:"What do graduates consistently get wrong or fail to do?"},
+      {id:'q4',type:'text',q:"What facilities does the department provide for documenting student work?"},
+      {id:'q5',type:'text',q:"What would you add to the curriculum if you had one more session a term?"}
+    ],
+    'Online marketplace seller':[
+      {id:'q1',type:'multi',q:"Where do you sell?",
+        opts:['Instagram','Etsy','Saatchi Art','Artsy','My own website','WhatsApp / DMs','A local marketplace app','Other']},
+      {id:'q2',type:'text',q:"What's the biggest reason a listing doesn't convert?"},
+      {id:'q3',type:'text',q:"What do buyers ask you before committing?"},
+      {id:'q4',type:'text',q:"Have you had a return or dispute? What was the reason?"},
+      {id:'q5',type:'text',q:"What do you do to make a buyer confident who can't see the work?"}
+    ]
   };
 
-  function follow(role,payload){
-    var f=FOLLOW[role];
-    enrich(payload);              /* name and country are asked either way */
-    more.hidden=false;
-    if(!f){                       /* no question for this role — just the fields */
-      ask.textContent='A little more, if you have a moment.';
-      more.classList.add('answered'); return;
-    }
-    ask.textContent=f[0];
-    f[1].forEach(function(label){
-      var b=document.createElement('button');
-      b.type='button'; b.textContent=label;
-      b.addEventListener('click',function(){
-        more.classList.add('answered');
-        ask.textContent=f[0]+'  \u2014  '+label;
-        payload.detail=label;
-        post(payload,'answered');
-      });
-      pills.appendChild(b);
-    });
-    more.hidden=false;
+  /* Registrars, conservators, shippers, insurers and the like are interviews,
+     not forms — no blind instrument for them, straight to the ask. */
+  var GATE={id:'gate',type:'single',
+    q:"Would you be open to a short conversation? Twenty minutes, whenever suits.",
+    opts:['Yes','No']};
+
+  var flow=[], idx=0, answers={}, payload=null, role='';
+
+  function buildFlow(r){ return (SURVEYS[r]||[]).concat([GATE]); }
+
+  function encourageFor(i,total){
+    if(total<=1) return '';
+    if(i===total-1) return 'Last one.';
+    var frac=(i+1)/total;
+    if(frac>=0.78) return 'Almost there — this is genuinely useful.';
+    if(frac>=0.42 && frac<=0.58) return 'Halfway. Thank you for this.';
+    return '';
   }
 
-  /* Every stage posts on its own. Somebody who gives an address and then
-     closes the tab is still on the list; the rest only sharpens the record. */
-  function post(payload,stage){
+  function currentQuestion(){
+    while(idx<flow.length && flow[idx].showIf && !flow[idx].showIf(answers)) idx++;
+    return flow[idx];
+  }
+
+  function clearInputs(){
+    pills.innerHTML=''; sqMulti.innerHTML=''; sqText.value='';
+    pills.hidden=true; sqMulti.hidden=true; sqText.hidden=true; sqNext.hidden=true;
+    sqEncourage.hidden=true; sqNext.onclick=null;
+  }
+
+  function renderQuestion(){
+    var q=currentQuestion();
+    clearInputs();
+    if(!q){ finishSurvey(); return; }
+    var total=flow.length;
+    sprog.hidden=false;
+    sprogFill.style.width=Math.round((idx/total)*100)+'%';
+    sprogLabel.textContent='Question '+(idx+1)+' of '+total;
+    sqPrompt.textContent=q.q;
+
+    if(q.type==='single'){
+      pills.hidden=false;
+      q.opts.forEach(function(label){
+        var b=document.createElement('button');
+        b.type='button'; b.textContent=label;
+        b.addEventListener('click',function(){ answer(q,label); });
+        pills.appendChild(b);
+      });
+    } else if(q.type==='multi'){
+      sqMulti.hidden=false;
+      q.opts.forEach(function(label){
+        var lab=document.createElement('label'); lab.className='opt';
+        var cb=document.createElement('input'); cb.type='checkbox'; cb.value=label;
+        var span=document.createElement('span'); span.textContent=label;
+        lab.appendChild(cb); lab.appendChild(span);
+        sqMulti.appendChild(lab);
+      });
+      sqNext.hidden=false;
+      sqNext.onclick=function(){
+        var chosen=[].slice.call(sqMulti.querySelectorAll('input:checked')).map(function(i){return i.value});
+        answer(q,chosen);
+      };
+    } else {
+      sqText.hidden=false; sqText.focus();
+      sqNext.hidden=false;
+      sqNext.onclick=function(){ answer(q,sqText.value.trim()); };
+    }
+
+    var enc=encourageFor(idx,total);
+    if(enc){ sqEncourage.hidden=false; sqEncourage.textContent=enc; }
+  }
+
+  function answer(q,value){
+    answers[q.id]=value;
+    if(q===GATE){
+      /* Post the survey the moment it's answered, win or lose the contact
+         step after — the ten questions are the data; losing them to an
+         abandoned contact form would be the whole point of the exercise. */
+      submitSurvey(false);
+      if(value==='Yes'){
+        sprog.hidden=true; sqPrompt.textContent=''; clearInputs();
+        extra.hidden=false; nm.focus();
+      } else {
+        finishSurvey();
+      }
+      return;
+    }
+    idx++;
+    renderQuestion();
+  }
+
+  function finishSurvey(){
+    sprog.hidden=true; clearInputs();
+    sqPrompt.textContent='Thank you — genuinely useful.';
+  }
+
+  /* One post at survey end, not one per question — a ten-question form
+     that fired a request per answer would burn through Formspree's monthly
+     cap in a handful of respondents. */
+  function submitSurvey(withContact){
     if(!ENDPOINT) return;
-    var body={},k;
+    var body={}, k;
     for(k in payload) body[k]=payload[k];
-    body.stage=stage;
+    body.stage=withContact?'survey_contact':'survey_complete';
+    body.survey_role=role;
+    body.answers=answers;
+    if(withContact){
+      body.name=(nm.value||'').trim();
+      body.whatsapp=(wa.value||'').trim();
+      body.email_secondary=(em2.value||'').trim();
+    }
     fetch(ENDPOINT,{method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify(body)}).catch(function(){});
   }
 
-  /* Name, country, organisation, and a yes to being written to. Asked after
-     the address is banked, so none of it stands between anyone and signing
-     up — and a survey invitation that opens with a name gets answered. */
-  function enrich(payload){
-    if(!go2) return;
-    function save(){
-      go2.disabled=true;
-      payload.name=(nm.value||'').trim();
-      payload.country=(ctry.value||'').trim();
-      payload.organisation=(org.value||'').trim();
-      payload.updates=cons.checked?'yes':'no';
-      payload.surveys=cons.checked?'yes':'no';
-      payload.consent_at=new Date().toISOString();
-      post(payload,'enriched');
-      extra.classList.add('saved');
-    }
-    go2.addEventListener('click',save);
-    [nm,ctry,org].forEach(function(el){
-      el.addEventListener('keydown',function(ev){ if(ev.key==='Enter') save(); });
-    });
+  go2 && go2.addEventListener('click',function(){
+    go2.disabled=true;
+    submitSurvey(true);
+    extra.classList.add('saved');
+  });
+
+  function startSurvey(r,p){
+    role=r; payload=p; answers={}; idx=0;
+    flow=buildFlow(r);
+    var n=flow.length-1;
+    sqIntro.textContent = n>0
+      ? "I'm doing research on how people in the art world actually work day to day — what takes time, what goes wrong, what you wish was different. This is research, not a pitch. "+n+" question"+(n===1?'':'s')+", about "+Math.max(1,Math.round(n*0.5))+" minute"+(Math.max(1,Math.round(n*0.5))===1?'':'s')+", answers anonymous."
+      : "We'd love to talk with you directly.";
+    more.hidden=false;
+    renderQuestion();
   }
 
   function done(m,role,payload){
     if(m) sub.textContent=m;
     enrol.classList.add('sent');
-    if(role&&payload) follow(role,payload);
+    if(role&&payload) startSurvey(role,payload);
   }
+
   function send(){
     var e=email.value.trim(), w=who.value||'Unspecified';
     if(!ok(e)){ email.value=''; email.placeholder='A working email, please'; email.focus(); return; }
