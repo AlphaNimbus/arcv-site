@@ -376,9 +376,12 @@ textarea.fld{resize:vertical;min-height:88px;line-height:1.55;font-family:var(--
 </div>
 
 <script>
-/* Paste a Formspree / Tally / Basin URL here to collect signups.
-   Left empty, the form opens a pre-filled email instead. */
-var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
+/* Supabase. anon key is INSERT-only on survey_responses (RLS) and can
+   EXECUTE email_seen(), which returns a bare true/false — the key that
+   ships in this HTML can never read the table back, only add to it or
+   ask "have I seen this address before?" */
+var SUPA_URL = "https://bmgffdqeibfmtcgzbasw.supabase.co";
+var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtZ2ZmZHFlaWJmbXRjZ3piYXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5NzQ5NzAsImV4cCI6MjEwMzU1MDk3MH0.K71MvKxTF2_XzT-DiqzBHJJo_0kyYxBoVxWRh1lXMiw";
 
 (function(){
   var go=document.getElementById('go'), email=document.getElementById('email'),
@@ -396,6 +399,40 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
       nm=document.getElementById('nm'), wa=document.getElementById('wa'),
       em2=document.getElementById('em2'), go2=document.getElementById('go2');
   function ok(v){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
+
+  function supaHeaders(extra){
+    var h={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
+    if(extra) for(var k in extra) h[k]=extra[k];
+    return h;
+  }
+
+  /* The one call worth waiting on, so it's capped at 3s. A timeout or any
+     other failure resolves to "not a duplicate" — a stray duplicate row
+     is trivial to dedupe later on email_norm; a respondent turned away by
+     a slow network is not recoverable. */
+  function emailSeen(addr){
+    var ctrl=(typeof AbortController!=='undefined')?new AbortController():null;
+    var t=ctrl?setTimeout(function(){ctrl.abort();},3000):null;
+    return fetch(SUPA_URL+'/rest/v1/rpc/email_seen',{
+      method:'POST', headers:supaHeaders(), signal:ctrl?ctrl.signal:undefined,
+      body:JSON.stringify({p_email:addr})
+    }).then(function(r){ if(t)clearTimeout(t); return r.ok?r.json():false; })
+      .catch(function(){ if(t)clearTimeout(t); return false; });
+  }
+
+  /* Fire-and-forget with one retry. Never blocks the UI, never surfaces
+     a failure to the respondent — by the time this runs they've already
+     seen the success state. */
+  function supaInsert(row,isRetry){
+    fetch(SUPA_URL+'/rest/v1/survey_responses',{
+      method:'POST', headers:supaHeaders({Prefer:'return=minimal'}),
+      body:JSON.stringify(row)
+    }).then(function(r){
+      if(!r.ok && !isRetry) setTimeout(function(){ supaInsert(row,true); },1500);
+    }).catch(function(){
+      if(!isRetry) setTimeout(function(){ supaInsert(row,true); },1500);
+    });
+  }
 
   /* Everything here is already in the browser. None of it costs a field,
      and country and source are what tell you which market answered. */
@@ -654,24 +691,21 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
     sqPrompt.textContent='Thank you — genuinely useful.';
   }
 
-  /* One post at survey end, not one per question — a ten-question form
-     that fired a request per answer would burn through Formspree's monthly
-     cap in a handful of respondents. */
+  /* One row at survey end, not one per question — each stage is its own
+     row rather than an update, so a person who answers and closes the tab
+     is still captured under 'answered'. */
   function submitSurvey(withContact){
-    if(!ENDPOINT) return;
-    var body={}, k;
-    for(k in payload) body[k]=payload[k];
-    body.stage=withContact?'survey_contact':'survey_complete';
-    body.survey_role=role;
-    body.answers=answers;
     if(withContact){
-      body.name=(nm.value||'').trim();
-      body.whatsapp=(wa.value||'').trim();
-      body.email_secondary=(em2.value||'').trim();
+      supaInsert({
+        stage:'enriched',
+        email:payload.email,
+        role:role,
+        name:(nm.value||'').trim(),
+        answers:{whatsapp:(wa.value||'').trim(),email_secondary:(em2.value||'').trim()}
+      });
+    } else {
+      supaInsert({stage:'answered', email:payload.email, role:role, answers:answers});
     }
-    fetch(ENDPOINT,{method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify(body)}).catch(function(){});
   }
 
   go2 && go2.addEventListener('click',function(){
@@ -691,11 +725,10 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
     renderQuestion();
   }
 
-  /* No server here to enforce this against, so it only holds within this
-     browser: same person, same device, come back and try again and the
-     address is remembered as already spent. A different device or a
-     cleared browser isn't caught \u2014 that needs a real backend, which this
-     static page doesn't have. */
+  /* Purely a local short-circuit so a returning visitor on this device
+     skips the round trip \u2014 email_seen() in Supabase is the actual
+     authority. A miss here must never be treated as "not seen"; it just
+     means this browser doesn't remember, so the RPC still has to run. */
   function usedEmails(){
     try{ return JSON.parse(localStorage.getItem('arcv_survey_done')||'[]'); }
     catch(e){ return []; }
@@ -710,33 +743,35 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
   function done(m,role,payload){
     if(m) sub.textContent=m;
     enrol.classList.add('sent');
-    markUsed(payload.email);
     if(role&&payload) startSurvey(role,payload);
   }
 
   function send(){
     var e=email.value.trim(), w=who.value||'Unspecified';
     if(!ok(e)){ email.value=''; email.placeholder='A working email, please'; email.focus(); return; }
-    if(usedEmails().indexOf(e.toLowerCase())!==-1){
-      email.value=''; email.placeholder='Already noted \u2014 thank you'; email.focus(); return;
+    var norm=e.toLowerCase();
+
+    function reject(){
+      markUsed(norm);
+      go.disabled=false; go.textContent='\u2192';
+      email.value=''; email.placeholder='Already noted \u2014 thank you'; email.focus();
     }
+
+    /* Instant local short-circuit for a returning visitor on this device.
+       A miss here proves nothing either way, so it still has to ask. */
+    if(usedEmails().indexOf(norm)!==-1){ reject(); return; }
+
     go.disabled=true; go.textContent='\u00b7\u00b7\u00b7';
     var c=context();
-    var payload={email:e,role:w,source:'prelaunch'};
-    for(var k in c) payload[k]=c[k];
+    var localPayload={email:e,role:w,source:'prelaunch'};
+    for(var k in c) localPayload[k]=c[k];
 
-    if(!ENDPOINT){
-      var lines='Email: '+e+'\nRole: '+w;
-      for(var k2 in c) lines+='\n'+k2+': '+c[k2];
-      window.location.href='mailto:hello@arcv.art?subject='+
-        encodeURIComponent('Early access')+'&body='+encodeURIComponent(lines);
-      done('Send the message your mail app just opened.',w,payload); return;
-    }
-    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify(payload)})
-      .then(function(r){ if(!r.ok) throw 0; done(null,w,payload); })
-      .catch(function(){ go.disabled=false; go.textContent='\u2192';
-        sub.textContent=''; alert('That didn\u2019t send \u2014 try hello@arcv.art.'); });
+    emailSeen(norm).then(function(seen){
+      if(seen){ reject(); return; }
+      supaInsert({stage:'signup', email:e, role:w, context:c});
+      markUsed(norm);
+      done(null,w,localPayload);
+    });
   }
   go.addEventListener('click',send);
   email.addEventListener('keydown',function(ev){ if(ev.key==='Enter') send(); });
