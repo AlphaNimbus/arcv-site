@@ -604,15 +604,26 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
         lab.appendChild(cb); lab.appendChild(span);
         sqMulti.appendChild(lab);
       });
-      sqNext.hidden=false;
+      sqNext.hidden=false; sqNext.disabled=true;
+      sqMulti.addEventListener('change',function(){
+        sqNext.disabled=!sqMulti.querySelector('input:checked');
+      });
       sqNext.onclick=function(){
         var chosen=[].slice.call(sqMulti.querySelectorAll('input:checked')).map(function(i){return i.value});
+        if(!chosen.length) return;
         answer(q,chosen);
       };
     } else {
       sqText.hidden=false; sqText.focus();
-      sqNext.hidden=false;
-      sqNext.onclick=function(){ answer(q,sqText.value.trim()); };
+      sqNext.hidden=false; sqNext.disabled=true;
+      sqText.addEventListener('input',function(){
+        sqNext.disabled=!sqText.value.trim();
+      });
+      sqNext.onclick=function(){
+        var v=sqText.value.trim();
+        if(!v) return;
+        answer(q,v);
+      };
     }
 
     var enc=encourageFor(idx,total);
@@ -680,15 +691,35 @@ var ENDPOINT = "https://formspree.io/f/xqpkkvrl";
     renderQuestion();
   }
 
+  /* No server here to enforce this against, so it only holds within this
+     browser: same person, same device, come back and try again and the
+     address is remembered as already spent. A different device or a
+     cleared browser isn't caught \u2014 that needs a real backend, which this
+     static page doesn't have. */
+  function usedEmails(){
+    try{ return JSON.parse(localStorage.getItem('arcv_survey_done')||'[]'); }
+    catch(e){ return []; }
+  }
+  function markUsed(addr){
+    try{
+      var u=usedEmails(), n=addr.trim().toLowerCase();
+      if(u.indexOf(n)===-1){ u.push(n); localStorage.setItem('arcv_survey_done',JSON.stringify(u)); }
+    }catch(e){}
+  }
+
   function done(m,role,payload){
     if(m) sub.textContent=m;
     enrol.classList.add('sent');
+    markUsed(payload.email);
     if(role&&payload) startSurvey(role,payload);
   }
 
   function send(){
     var e=email.value.trim(), w=who.value||'Unspecified';
     if(!ok(e)){ email.value=''; email.placeholder='A working email, please'; email.focus(); return; }
+    if(usedEmails().indexOf(e.toLowerCase())!==-1){
+      email.value=''; email.placeholder='Already noted \u2014 thank you'; email.focus(); return;
+    }
     go.disabled=true; go.textContent='\u00b7\u00b7\u00b7';
     var c=context();
     var payload={email:e,role:w,source:'prelaunch'};
