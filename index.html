@@ -459,7 +459,14 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
   /* Blind instruments — nothing here names the product, the method, or the
      problem we think we're solving. Whatever a respondent mentions unprompted
      is what actually matters to them; whatever they omit is what they don't
-     currently think about. See Discovery Surveys, Ramati Art Group. */
+     currently think about. See Discovery Surveys, Ramati Art Group.
+
+     v2, Sept 2026. The editing rule, which matters more than the questions:
+     AN ID IS BOUND TO ITS WORDING FOR LIFE. Reworded question, new id.
+     Retired question, drop it — never renumber the ones after it. Rows
+     already in survey_responses were written against v1 ids and stay
+     readable only for as long as that holds. answers._v marks the version;
+     rows with no _v are v1. */
   var SURVEYS={
     'Artist':[
       {id:'q1',type:'single',q:"How long have you been selling your work?",
@@ -468,13 +475,29 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         opts:['0','1–3','4–10','11–25','26–50','50+']},
       {id:'q3',type:'single',q:"What was your most recent sale worth, in USD?",
         opts:['Under $200','$200–500','$500–1,500','$1,500–5,000','$5,000–15,000','$15,000+']},
+      /* v2: last sale is one draw from a heavy tail. q3 stays for continuity
+         with v1 rows; q3t is the number worth modelling on. */
+      {id:'q3t',type:'single',q:"And what would you call a typical sale for you?",
+        opts:['Under $200','$200–500','$500–1,500','$1,500–5,000','$5,000–15,000','$15,000+','Too varied to say']},
       {id:'q4',type:'text',q:"Think about the last work you finished. Walk me through everything you did with it between finishing it and it leaving your studio."},
+      /* v2: the substitute. Cloned from the Framer pair, which is the only
+         place v1 asked what someone already does AND what triggered it. */
+      {id:'sub',type:'single',q:"Do you photograph a work yourself before it leaves your studio?",
+        opts:['Always','Usually','Only the more valuable ones','Rarely','Never']},
+      {id:'subwhy',type:'text',q:"What made you start doing that — or decide not to?"},
       {id:'q5',type:'text',q:"What's the most annoying part of selling a work?"},
       {id:'q6',type:'text',q:"Why is that part hard? What makes it that way?"},
       {id:'q7',type:'single',q:"In the last 12 months, has a sale fallen through or gone quiet after the buyer showed real interest?",
         opts:['Yes, more than once','Yes, once','No',"I don't sell directly"]},
+      /* v2: identity, not condition. v1 asked about damage everywhere and
+         about a work being the wrong work nowhere. */
+      {id:'auth',type:'single',q:"Has anyone ever questioned whether a work was really yours, or turned out to be selling a copy of it?",
+        opts:['Yes','No','Not that I know of']},
+      {id:'authx',type:'text',q:"What happened, and how did it end?",
+        showIf:function(a){return a.auth==='Yes'}},
       {id:'q8',type:'multi',q:"What do you currently pay for, in any amount, that helps you sell rather than make?",
-        opts:['Website or portfolio','Ads','Photography of your work','Framing','Shipping insurance','An agent or gallery commission','Nothing']},
+        opts:['Website or portfolio','Ads','Photography of your work','Framing','Shipping insurance','An agent or gallery commission','Nothing'],
+        exclusive:['Nothing']},
       {id:'q9',type:'single',q:"What's the most you've paid in one go for something that made selling easier?",
         opts:['Nothing','Under $50','$50–200','$200–500','$500+']},
       {id:'q10',type:'text',q:"If you skipped everything you do to a work after it's finished and just handed it over — what would go wrong?"}
@@ -488,15 +511,18 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         opts:['Regularly','A few times','Once','Never']},
       {id:'q4',type:'text',q:"When you finish a piece, what do you do with it? Everything, in order."},
       {id:'q5',type:'multi',q:"How do you keep track of work you've made?",
-        opts:['Phone camera roll','Instagram','A folder on a computer','A spreadsheet','A website','Notebook',"I don't really"]},
+        opts:['Phone camera roll','Instagram','A folder on a computer','A spreadsheet','A website','Notebook',"I don't really"],
+        exclusive:["I don't really"]},
       {id:'q6',type:'text',q:"What's the hardest part of showing your work to someone who isn't in the room with you?"},
       {id:'q7',type:'single',q:"Has a tutor, gallery or open call ever asked you for something about a work you couldn't produce?",
         opts:['Yes','No','Not sure']},
       {id:'q8',type:'text',q:"If yes — what was it?",
         showIf:function(a){return a.q7==='Yes'}},
       {id:'q9',type:'single',q:"Roughly how much do you spend a year on things that aren't materials — documentation, website, entry fees, framing?",
-        opts:['Nothing','Under $100','$100–300','$300–800','$800+']},
-      {id:'q10',type:'text',q:"What do you wish someone had told you to start doing from day one?"}
+        opts:['Nothing','Under $100','$100–300','$300–800','$800+']}
+      /* v2: q10 ("what do you wish someone had told you") retired — an advice
+         question, and advice questions return warm quotable nothing. v1 rows
+         keep their q10; the id is burned and must never be reused. */
     ],
     'Gallery staff':[
       {id:'q1',type:'single',q:"Your role?",
@@ -504,13 +530,25 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q2',type:'single',q:"Roughly how many works pass through your space in a year?",
         opts:['Under 50','50–200','200–500','500+']},
       {id:'q3',type:'text',q:"When a work arrives from an artist, what happens to it before it goes on a wall?"},
+      /* v2: q3 open, sub quantified — you need both to size anything. */
+      {id:'sub',type:'single',q:"Is an incoming work photographed or condition-checked before it goes up?",
+        opts:['Always','Usually','Only above a certain value','Rarely','Never']},
       {id:'q4',type:'text',q:"What's the most tedious recurring task in your week?"},
       {id:'q5',type:'single',q:"In the last year, has a work been damaged, disputed, or come back in a state someone questioned?",
         opts:['Yes, more than once','Yes, once','No',"I wouldn't know"]},
       {id:'q6',type:'text',q:"If yes — how was it resolved, and what did you rely on to resolve it?",
         showIf:function(a){return a.q5==='Yes, more than once'||a.q5==='Yes, once'}},
+      /* v2: the missing number. v1 captured frequency of disputes everywhere
+         and severity nowhere, which makes expected-value impossible to compute. */
+      {id:'cost',type:'text',q:"And roughly what did it cost in the end — money, time, or the relationship?",
+        showIf:function(a){return a.q5==='Yes, more than once'||a.q5==='Yes, once'}},
+      {id:'auth',type:'single',q:"Has a work ever arrived that wasn't the work you were expecting — different piece, different condition, different attribution?",
+        opts:['Yes','No','Not sure']},
+      {id:'authx',type:'text',q:"What was it, and how did you establish what had happened?",
+        showIf:function(a){return a.auth==='Yes'}},
       {id:'q7',type:'multi',q:"Who asks you for paperwork about a work, and what do they ask for?",
-        opts:['Buyers','Insurers','Shippers','Auction houses','Artists','Lenders / borrowers','Nobody really']},
+        opts:['Buyers','Insurers','Shippers','Auction houses','Artists','Lenders / borrowers','Nobody really'],
+        exclusive:['Nobody really']},
       {id:'q8',type:'text',q:"What have you tried, bought, or subscribed to in order to keep track of inventory or condition?"}
     ],
     'Collector or private dealer':[
@@ -521,21 +559,33 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q3',type:'single',q:"Have you bought a work you never saw in person before paying?",
         opts:['Yes, several times','Yes, once','No',"No, and I wouldn't"]},
       {id:'q4',type:'text',q:"Think about the last work you bought. What did you look at, ask for, or check before deciding?"},
+      /* v2: the thesis question, asked blind. Never mentions photographs
+         being unreliable — just asks what closes the gap, and lets them
+         either name it or fail to. */
+      {id:'conf',type:'text',q:"When you buy without seeing a work, what makes you confident the pictures are of the actual piece, in its actual state?",
+        showIf:function(a){return a.q3==='Yes, several times'||a.q3==='Yes, once'}},
       {id:'q5',type:'text',q:"What's the most uncomfortable part of buying?"},
       {id:'q6',type:'single',q:"Have you ever bought something that turned out to be different from what you expected — condition, size, attribution, anything?",
         opts:['Yes','No','Not yet']},
       {id:'q7',type:'text',q:"If yes — what happened?",
+        showIf:function(a){return a.q6==='Yes'}},
+      {id:'cost',type:'text',q:"And what did that cost you in the end — money, time, or the relationship?",
         showIf:function(a){return a.q6==='Yes'}},
       {id:'q8',type:'single',q:"Have you ever sold or tried to sell a work you owned?",
         opts:['Yes, several','Yes, once','No']},
       {id:'q9',type:'text',q:"If yes — what did the buyer or auction house ask you for that you struggled to produce?",
         showIf:function(a){return a.q8==='Yes, several'||a.q8==='Yes, once'}},
       {id:'q10',type:'multi',q:"What paperwork do you keep for a work you own?",
-        opts:['Invoice / receipt','Certificate from the artist','Condition report','Photographs','Insurance schedule','Nothing formal']}
+        opts:['Invoice / receipt','Certificate from the artist','Condition report','Photographs','Insurance schedule','Nothing formal'],
+        exclusive:['Nothing formal']}
     ],
     'Framer':[
       {id:'q1',type:'single',q:"How many pieces do you handle a month?",
         opts:['Under 20','20–60','60–150','150+']},
+      /* v2: liability scales with the most valuable thing on the bench,
+         not with throughput. */
+      {id:'q1b',type:'single',q:"What's the most valuable single piece you've had in the workshop this year?",
+        opts:['Under $1,000','$1,000–5,000','$5,000–25,000','$25,000–100,000','$100,000+','No idea']},
       {id:'q2',type:'multi',q:"Who brings you work?",
         opts:['Individual artists','Galleries','Private collectors','Interior designers','Institutions']},
       {id:'q3',type:'text',q:"When a piece comes in, what do you record about it before you start?"},
@@ -543,12 +593,17 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         opts:['Yes, more than once','Yes, once','No']},
       {id:'q5',type:'text',q:"If yes — how did you settle it?",
         showIf:function(a){return a.q4==='Yes, more than once'||a.q4==='Yes, once'}},
+      {id:'cost',type:'text',q:"And what did settling it cost you — money, time, or the relationship?",
+        showIf:function(a){return a.q4==='Yes, more than once'||a.q4==='Yes, once'}},
       {id:'q6',type:'text',q:"What would make disputes like that easier to settle?"},
       {id:'q7',type:'single',q:"How often do you photograph work before you touch it?",
         opts:['Always','Usually','Only for valuable pieces','Rarely','Never']},
       {id:'q8',type:'text',q:"What made you start doing that — or decide not to?"}
     ],
     'Fabricator, print studio, or foundry':[
+      /* v2: v1 had no volume question here at all, so nothing could be sized. */
+      {id:'vol',type:'single',q:"Roughly how many editions leave your workshop in a year?",
+        opts:['Under 10','10–50','50–200','200+']},
       {id:'q1',type:'text',q:"What do you produce, and in what edition sizes?"},
       {id:'q2',type:'text',q:"When an edition leaves your workshop, what goes with it?"},
       {id:'q3',type:'text',q:"How do you record which piece is which within an edition?"},
@@ -556,19 +611,47 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         opts:['Yes','No']},
       {id:'q4b',type:'text',q:"If yes — what did they ask?",
         showIf:function(a){return a.q4==='Yes'}},
+      {id:'cost',type:'text',q:"What did answering it take — and could you answer it at all?",
+        showIf:function(a){return a.q4==='Yes'}},
+      {id:'auth',type:'single',q:"Has a piece ever been presented as yours that you didn't make, or attributed to the wrong edition number?",
+        opts:['Yes','No','Not sure']},
+      {id:'authx',type:'text',q:"What happened?",
+        showIf:function(a){return a.auth==='Yes'}},
       {id:'q5',type:'text',q:"What would you need in order to answer that question easily?"}
     ],
     'Artwork photographer':[
+      /* v2: v1 asked what they charge but never how many works they shoot,
+         so the rate was unmultipliable. */
+      {id:'vol',type:'single',q:"Roughly how many individual works do you shoot in a year?",
+        opts:['Under 100','100–500','500–2,000','2,000+']},
       {id:'q1',type:'text',q:"Who hires you, and for what?"},
       {id:'q2',type:'text',q:"Walk me through a typical shoot, setup to delivery."},
       {id:'q3',type:'text',q:"What's the hardest kind of work to photograph well, and why?"},
+      {id:'cond',type:'single',q:"Do clients ever ask you to record a work's condition, not just how it looks?",
+        opts:['Often','Sometimes','They ask and I decline','Never']},
+      {id:'condx',type:'text',q:"What do they ask for, exactly?",
+        showIf:function(a){return a.cond==='Often'||a.cond==='Sometimes'||a.cond==='They ask and I decline'}},
       {id:'q4',type:'text',q:"Do clients ever ask for something a photograph can't give them?"},
+      {id:'auth',type:'single',q:"Has anyone ever needed to prove a photograph was of a particular work on a particular date?",
+        opts:['Yes','No','Not sure']},
       {id:'q5',type:'text',q:"What do you charge per work or per session?"}
     ],
     'Art handler or preparator':[
+      /* v2: the thinnest instrument in v1 and the one closest to where
+         evidentiary liability actually sits. Five open-text questions
+         became a measurable instrument. */
+      {id:'vol',type:'single',q:"Roughly how many works do you handle in a month?",
+        opts:['Under 20','20–100','100–300','300+']},
       {id:'q1',type:'text',q:"Who do you work for — an institution, a shipper, freelance?"},
       {id:'q2',type:'text',q:"What do you do before you pick up a work you haven't handled before?"},
+      {id:'sub',type:'single',q:"Is a work photographed or condition-checked before you handle it?",
+        opts:['Always','Usually','Only above a certain value','Rarely','Never']},
+      {id:'subwhy',type:'text',q:"What made that the practice — or what stops it happening?"},
+      {id:'freq',type:'single',q:"In the last year, how often has a work been questioned as damaged after you or your team handled it?",
+        opts:['Never','Once','2–5 times','More than 5']},
       {id:'q3',type:'text',q:"When something is damaged in transit or installation, what happens next?"},
+      {id:'cost',type:'text',q:"What does one of those episodes cost — money, time, or the relationship?",
+        showIf:function(a){return a.freq&&a.freq!=='Never'}},
       {id:'q4',type:'text',q:"What evidence exists about the state a work was in before you touched it?"},
       {id:'q5',type:'text',q:"How often does a dispute come down to nobody being sure?"}
     ],
@@ -577,15 +660,44 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q2',type:'text',q:"What do you tell students to do with a work once it's finished?"},
       {id:'q3',type:'text',q:"What do graduates consistently get wrong or fail to do?"},
       {id:'q4',type:'text',q:"What facilities does the department provide for documenting student work?"},
-      {id:'q5',type:'text',q:"What would you add to the curriculum if you had one more session a term?"}
+      /* v2: if this persona exists to open a departmental channel, it has to
+         ask about procurement. q5 (curriculum wishlist) retired — hypothetical. */
+      {id:'proc',type:'text',q:"What software or systems does the department already pay for, for documenting or archiving work?"},
+      {id:'who',type:'single',q:"Who decides when the department takes on a new tool or system?",
+        opts:['Me','Department head','A committee','Central IT or procurement','Not sure']},
+      {id:'budget',type:'single',q:"When does the department's budget for that kind of thing get set?",
+        opts:['Annually, in autumn','Annually, in spring','Rolling / as needed','Not sure']}
     ],
     'Online marketplace seller':[
       {id:'q1',type:'multi',q:"Where do you sell?",
         opts:['Instagram','Etsy','Saatchi Art','Artsy','My own website','WhatsApp / DMs','A local marketplace app','Other']},
+      /* v2: v1 had neither volume nor price here, so this persona could not
+         be segmented against Artist at all. */
+      {id:'vol',type:'single',q:"Roughly how many works do you sell in a year?",
+        opts:['Under 10','10–50','50–200','200+']},
+      {id:'price',type:'single',q:"Typical price?",
+        opts:['Under $200','$200–500','$500–1,500','$1,500–5,000','$5,000+']},
       {id:'q2',type:'text',q:"What's the biggest reason a listing doesn't convert?"},
       {id:'q3',type:'text',q:"What do buyers ask you before committing?"},
       {id:'q4',type:'text',q:"Have you had a return or dispute? What was the reason?"},
+      {id:'cost',type:'text',q:"If you have — what did it cost you once it was done? If you haven't, just say so."},
+      {id:'auth',type:'single',q:"Has a buyer ever said the work they received didn't match the photographs?",
+        opts:['Yes, more than once','Yes, once','No']},
+      {id:'authx',type:'text',q:"What was the mismatch, and how did it end?",
+        showIf:function(a){return a.auth==='Yes, more than once'||a.auth==='Yes, once'}},
       {id:'q5',type:'text',q:"What do you do to make a buyer confident who can't see the work?"}
+    ],
+    /* v2: this branch had no instrument in v1, so it dropped straight to the
+       gate and every row arrived as a bare email with no interpretable role.
+       Insurers land here, and they are the only party who could mandate a
+       record rather than buy one. Kept to four so it stays an opener, not a form. */
+    'Other / institutional':[
+      {id:'role',type:'text',q:"What's your role, and what kind of organisation?"},
+      {id:'q1',type:'text',q:"What do you need to know about a work that's hard to find out?"},
+      {id:'q2',type:'single',q:"Have you ever needed to establish the condition or the identity of a work and struggled to?",
+        opts:['Yes','No','Not sure']},
+      {id:'q3',type:'text',q:"What happened, and what did you fall back on?",
+        showIf:function(a){return a.q2==='Yes'}}
     ]
   };
 
@@ -617,6 +729,7 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
     pills.innerHTML=''; sqMulti.innerHTML=''; sqText.value='';
     pills.hidden=true; sqMulti.hidden=true; sqText.hidden=true; sqNext.hidden=true;
     sqEncourage.hidden=true; sqNext.onclick=null;
+    sqMulti.onchange=null; sqText.oninput=null;
   }
 
   function renderQuestion(){
@@ -647,9 +760,21 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         sqMulti.appendChild(lab);
       });
       sqNext.hidden=false; sqNext.disabled=true;
-      sqMulti.addEventListener('change',function(){
+      /* onchange, not addEventListener: clearInputs() empties sqMulti's
+         children but cannot remove a listener bound to sqMulti itself, so
+         every question was leaving a live closure over its own `q` behind. */
+      sqMulti.onchange=function(e){
+        /* "Nothing" / "Nobody really" and friends are mutually exclusive
+           with every other option. Enforced here rather than in a cleaning
+           script later, because a contradictory row is unrecoverable. */
+        var ex=q.exclusive||[], t=e&&e.target;
+        if(ex.length && t && t.type==='checkbox' && t.checked){
+          var boxes=[].slice.call(sqMulti.querySelectorAll('input'));
+          if(ex.indexOf(t.value)!==-1) boxes.forEach(function(b){ if(b!==t) b.checked=false; });
+          else boxes.forEach(function(b){ if(ex.indexOf(b.value)!==-1) b.checked=false; });
+        }
         sqNext.disabled=!sqMulti.querySelector('input:checked');
-      });
+      };
       sqNext.onclick=function(){
         var chosen=[].slice.call(sqMulti.querySelectorAll('input:checked')).map(function(i){return i.value});
         if(!chosen.length) return;
@@ -658,9 +783,9 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
     } else {
       sqText.hidden=false; sqText.focus();
       sqNext.hidden=false; sqNext.disabled=true;
-      sqText.addEventListener('input',function(){
+      sqText.oninput=function(){
         sqNext.disabled=!sqText.value.trim();
-      });
+      };
       sqNext.onclick=function(){
         var v=sqText.value.trim();
         if(!v) return;
@@ -709,7 +834,12 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         answers:{whatsapp:(wa.value||'').trim(),email_secondary:(em2.value||'').trim()}
       });
     } else {
-      supaInsert({stage:'answered', email:payload.email, role:role, answers:answers});
+      /* _v names the instrument that produced the row. Rows already in the
+         table carry no _v and were produced by v1 — which is exactly why an
+         id may never be renumbered or reworded in place. */
+      var out={_v:2};
+      for(var k in answers) if(Object.prototype.hasOwnProperty.call(answers,k)) out[k]=answers[k];
+      supaInsert({stage:'answered', email:payload.email, role:role, answers:out});
     }
   }
 
@@ -724,7 +854,7 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
     flow=buildFlow(r);
     var n=flow.length-1;
     sqIntro.textContent = n>0
-      ? "I'm doing research on how people in the art world actually work day to day — what takes time, what goes wrong, what you wish was different. This is research, not a pitch. "+n+" question"+(n===1?'':'s')+", about "+Math.max(1,Math.round(n*0.5))+" minute"+(Math.max(1,Math.round(n*0.5))===1?'':'s')+", answers anonymous."
+      ? "I'm doing research on how people in the art world actually work day to day — what takes time, what goes wrong, what you wish was different. This is research, not a pitch. "+n+" question"+(n===1?'':'s')+", about "+Math.max(1,Math.round(n*0.5))+" minute"+(Math.max(1,Math.round(n*0.5))===1?'':'s')+", answers confidential — never shared or published."
       : "We'd love to talk with you directly.";
     more.hidden=false;
     renderQuestion();
