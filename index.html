@@ -466,7 +466,15 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
      Retired question, drop it — never renumber the ones after it. Rows
      already in survey_responses were written against v1 ids and stay
      readable only for as long as that holds. answers._v marks the version;
-     rows with no _v are v1. */
+     rows with no _v are v1.
+
+     v2.1, Sept 2026. Appended to every role: a short ARcv-specific research block, after
+     that role's own problem-discovery questions, never before, and never a "would ARcv
+     help" question — still blind. Its ids are prefixed arcv_ and reused verbatim across
+     every role that asks the same underlying question, on purpose, so the rows can be
+     compared across roles and not only within one; which arcv_ questions a given role
+     gets, and which it skips because its own v2 questions already cover the ground, is
+     explained in a short comment at that role's own block. */
   var SURVEYS={
     'Artist':[
       {id:'q1',type:'single',q:"How long have you been selling your work?",
@@ -500,7 +508,31 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         exclusive:['Nothing']},
       {id:'q9',type:'single',q:"What's the most you've paid in one go for something that made selling easier?",
         opts:['Nothing','Under $50','$50–200','$200–500','$500+']},
-      {id:'q10',type:'text',q:"If you skipped everything you do to a work after it's finished and just handed it over — what would go wrong?"}
+      {id:'q10',type:'text',q:"If you skipped everything you do to a work after it's finished and just handed it over — what would go wrong?"},
+      /* v2.1, Sept 2026: the ARcv research addendum. Neutral and blind, same rule as the
+         header above — no product name, no "would ARcv help" framing, appended after every
+         problem-discovery question above, never before. Ids are prefixed arcv_ so they can
+         never collide with a v1/v2 id, and the SAME id is reused verbatim wherever the same
+         underlying dimension is asked of a different role — that's what lets answers be
+         compared across roles rather than only within one. Not every arcv_ question goes to
+         every role: each role gets only the ones its existing instrument doesn't already
+         cover — Artist skips equipment/environment (sub/subwhy already establish whether and
+         how they self-document) and skips a raw spend figure (q8/q9 already have it), but
+         gets the full evidence-trust and proposed-workflow set since nothing above asks either. */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_evidenceTrust',type:'multi',q:"When you need to establish that a particular work is the same work that was previously photographed, sold, transported or received, what evidence do you rely on?",
+        opts:['Photographs','Dimensions','Certificate','Invoice / receipt','Edition number','Signature / inscription','Condition report','Inventory / collection record','Labels / stamps','Physical inspection','Other','Nothing specific'],
+        exclusive:['Nothing specific']},
+      {id:'arcv_evidenceBest',type:'text',q:"Which of those would you trust most when there is a disagreement about the work?"},
+      {id:'arcv_timeTolerance',type:'single',q:"How much time would you realistically spend documenting one work before it became too burdensome?",
+        opts:['Under 2 minutes','2–5 minutes','5–10 minutes','10–15 minutes','15–30 minutes','More than 30 minutes']},
+      {id:'arcv_workflowFit',type:'text',q:"Imagine a system that guides you through photographing an artwork using your phone and one movable light. It tells you where to place the light, checks the capture as you go, and may ask for another image when it needs more evidence. How would you expect that kind of process to fit into your current workflow?"},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Art student or recent graduate':[
       {id:'q1',type:'single',q:"Where are you?",
@@ -519,10 +551,24 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q8',type:'text',q:"If yes — what was it?",
         showIf:function(a){return a.q7==='Yes'}},
       {id:'q9',type:'single',q:"Roughly how much do you spend a year on things that aren't materials — documentation, website, entry fees, framing?",
-        opts:['Nothing','Under $100','$100–300','$300–800','$800+']}
+        opts:['Nothing','Under $100','$100–300','$300–800','$800+']},
       /* v2: q10 ("what do you wish someone had told you") retired — an advice
          question, and advice questions return warm quotable nothing. v1 rows
          keep their q10; the id is burned and must never be reused. */
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         No lifecycle-point or documentation-content question — q4/q5 already cover both. */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_equip',type:'multi',q:"What equipment would normally be available to you?",
+        opts:['Smartphone','Camera','Tripod','Adjustable lamp / light','Multiple lights','Polarising filter','Controlled photo area / studio','None of these','Other'],
+        exclusive:['None of these']},
+      {id:'arcv_timeTolerance',type:'single',q:"How much time would you realistically spend documenting one work before it became too burdensome?",
+        opts:['Under 2 minutes','2–5 minutes','5–10 minutes','10–15 minutes','15–30 minutes','More than 30 minutes']},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Gallery staff':[
       {id:'q1',type:'single',q:"Your role?",
@@ -549,7 +595,27 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q7',type:'multi',q:"Who asks you for paperwork about a work, and what do they ask for?",
         opts:['Buyers','Insurers','Shippers','Auction houses','Artists','Lenders / borrowers','Nobody really'],
         exclusive:['Nobody really']},
-      {id:'q8',type:'text',q:"What have you tried, bought, or subscribed to in order to keep track of inventory or condition?"}
+      {id:'q8',type:'text',q:"What have you tried, bought, or subscribed to in order to keep track of inventory or condition?"},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         q3/sub already cover WHAT happens to an incoming work and whether it gets
+         checked — arcv_docWho fills the one real gap, WHO does it. One of the three
+         institutional roles (with Faculty and Other / institutional): gets the
+         independent-assurance pair (Section 7) but not arcv_institWho/arcv_institNeeds,
+         since q3/q7/q8 already establish who's responsible and what paperwork is asked for. */
+      {id:'arcv_docWho',type:'single',q:"Who normally creates that record?",
+        opts:['Artist','Gallery staff','Registrar / collections staff','Photographer','Art handler / preparator','External specialist','Collector / owner','More than one person','Nobody consistently','Other']},
+      {id:'arcv_evidenceTrust',type:'multi',q:"When you need to establish that a particular work is the same work that was previously photographed, sold, transported or received, what evidence do you rely on?",
+        opts:['Photographs','Dimensions','Certificate','Invoice / receipt','Edition number','Signature / inscription','Condition report','Inventory / collection record','Labels / stamps','Physical inspection','Other','Nothing specific'],
+        exclusive:['Nothing specific']},
+      {id:'arcv_evidenceBest',type:'text',q:"Which of those would you trust most when there is a disagreement about the work?"},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_institAssurance',type:'single',q:"Would the record need to be independently witnessed, certified or approved by another person to be useful?",
+        opts:['Yes','No','Depends on the use','Not sure']},
+      {id:'arcv_institAssuranceWhy',type:'text',q:"If it depended on the use, what uses would require that extra level of assurance?",
+        showIf:function(a){return a.arcv_institAssurance==='Depends on the use'}},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Collector or private dealer':[
       {id:'q1',type:'single',q:"In the last three years, roughly how many works have you bought?",
@@ -577,7 +643,26 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         showIf:function(a){return a.q8==='Yes, several'||a.q8==='Yes, once'}},
       {id:'q10',type:'multi',q:"What paperwork do you keep for a work you own?",
         opts:['Invoice / receipt','Certificate from the artist','Condition report','Photographs','Insurance schedule','Nothing formal'],
-        exclusive:['Nothing formal']}
+        exclusive:['Nothing formal']},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         No general evidence-trust checklist — conf/q10 already function as that. What's
+         missing is the sharper question: can you tell whether a work changed, physically,
+         between when you were shown it and when you received or now hold it. No capture-
+         practicality section — a collector isn't the one behind the camera. */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_pastState',type:'single',q:"Have you ever had to establish what a work was physically like at an earlier point in time?",
+        opts:['Yes','No','Not sure']},
+      {id:'arcv_pastStateWhat',type:'text',q:"What were you trying to establish, and what evidence did you have?",
+        showIf:function(a){return a.arcv_pastState==='Yes'}},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_whoTrusts',type:'multi',q:"Who else would need to trust or accept that record for it to be useful?",
+        opts:['Me','Artist','Collector','Gallery','Museum','Insurer','Shipper / logistics provider','Auction house','Client / buyer','Government / regulator','Other','Nobody else'],
+        exclusive:['Nobody else']},
+      {id:'arcv_paymentModel',type:'single',q:"If a documentation system saved you meaningful time or helped resolve disputes, how would you expect it to be paid for?",
+        opts:['Per work','Monthly subscription','Annual subscription','Included in another service','Paid by buyer / collector','Paid by institution','I would expect it to be free','Other']}
     ],
     'Framer':[
       {id:'q1',type:'single',q:"How many pieces do you handle a month?",
@@ -598,7 +683,21 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q6',type:'text',q:"What would make disputes like that easier to settle?"},
       {id:'q7',type:'single',q:"How often do you photograph work before you touch it?",
         opts:['Always','Usually','Only for valuable pieces','Rarely','Never']},
-      {id:'q8',type:'text',q:"What made you start doing that — or decide not to?"}
+      {id:'q8',type:'text',q:"What made you start doing that — or decide not to?"},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule). */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_equip',type:'multi',q:"What equipment would normally be available to you?",
+        opts:['Smartphone','Camera','Tripod','Adjustable lamp / light','Multiple lights','Polarising filter','Controlled photo area / studio','None of these','Other'],
+        exclusive:['None of these']},
+      {id:'arcv_timeTolerance',type:'single',q:"How much time would you realistically spend documenting one work before it became too burdensome?",
+        opts:['Under 2 minutes','2–5 minutes','5–10 minutes','10–15 minutes','15–30 minutes','More than 30 minutes']},
+      {id:'arcv_workflowFit',type:'text',q:"Imagine a system that guides you through photographing an artwork using your phone and one movable light. It tells you where to place the light, checks the capture as you go, and may ask for another image when it needs more evidence. How would you expect that kind of process to fit into your current workflow?"},
+      {id:'arcv_frictionPart',type:'single',q:"Which part of that process would be hardest for you?",
+        opts:['Setting up the phone','Keeping the camera position stable','Moving the light','Following the instructions','Keeping markers/reference material visible','Capturing the back / verso','Spending the extra time','Nothing in particular','Other']},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Fabricator, print studio, or foundry':[
       /* v2: v1 had no volume question here at all, so nothing could be sized. */
@@ -617,7 +716,21 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         opts:['Yes','No','Not sure']},
       {id:'authx',type:'text',q:"What happened?",
         showIf:function(a){return a.auth==='Yes'}},
-      {id:'q5',type:'text',q:"What would you need in order to answer that question easily?"}
+      {id:'q5',type:'text',q:"What would you need in order to answer that question easily?"},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule). */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_pastState',type:'single',q:"Have you ever had to establish what a work was physically like at an earlier point in time?",
+        opts:['Yes','No','Not sure']},
+      {id:'arcv_pastStateWhat',type:'text',q:"What were you trying to establish, and what evidence did you have?",
+        showIf:function(a){return a.arcv_pastState==='Yes'}},
+      {id:'arcv_timeTolerance',type:'single',q:"How much time would you realistically spend documenting one work before it became too burdensome?",
+        opts:['Under 2 minutes','2–5 minutes','5–10 minutes','10–15 minutes','15–30 minutes','More than 30 minutes']},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Artwork photographer':[
       /* v2: v1 asked what they charge but never how many works they shoot,
@@ -634,7 +747,25 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q4',type:'text',q:"Do clients ever ask for something a photograph can't give them?"},
       {id:'auth',type:'single',q:"Has anyone ever needed to prove a photograph was of a particular work on a particular date?",
         opts:['Yes','No','Not sure']},
-      {id:'q5',type:'text',q:"What do you charge per work or per session?"}
+      {id:'q5',type:'text',q:"What do you charge per work or per session?"},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         No evidence-trust or "what can't a photo tell you" pair here — q4 and auth already
+         ask a photographer that directly, from both sides (what clients ask for that a photo
+         can't give, and whether a photo has had to prove a specific work on a specific date).
+         Kept to what's genuinely new: whether a guided capture would fit their existing
+         paid service, and what equipment gap (if any) it would mean closing. */
+      {id:'arcv_equip',type:'multi',q:"What equipment would normally be available to you?",
+        opts:['Smartphone','Camera','Tripod','Adjustable lamp / light','Multiple lights','Polarising filter','Controlled photo area / studio','None of these','Other'],
+        exclusive:['None of these']},
+      {id:'arcv_timeTolerance',type:'single',q:"How much time would you realistically spend documenting one work before it became too burdensome?",
+        opts:['Under 2 minutes','2–5 minutes','5–10 minutes','10–15 minutes','15–30 minutes','More than 30 minutes']},
+      {id:'arcv_workflowFit',type:'text',q:"Imagine a system that guides you through photographing an artwork using your phone and one movable light. It tells you where to place the light, checks the capture as you go, and may ask for another image when it needs more evidence. How would you expect that kind of process to fit into your current workflow?"},
+      {id:'arcv_frictionPart',type:'single',q:"Which part of that process would be hardest for you?",
+        opts:['Setting up the phone','Keeping the camera position stable','Moving the light','Following the instructions','Keeping markers/reference material visible','Capturing the back / verso','Spending the extra time','Nothing in particular','Other']},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Art handler or preparator':[
       /* v2: the thinnest instrument in v1 and the one closest to where
@@ -653,7 +784,22 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'cost',type:'text',q:"What does one of those episodes cost — money, time, or the relationship?",
         showIf:function(a){return a.freq&&a.freq!=='Never'}},
       {id:'q4',type:'text',q:"What evidence exists about the state a work was in before you touched it?"},
-      {id:'q5',type:'text',q:"How often does a dispute come down to nobody being sure?"}
+      {id:'q5',type:'text',q:"How often does a dispute come down to nobody being sure?"},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         No evidence-trust checklist — q4 already asks what evidence exists before a handler
+         touches a work, which is the same question from this role's own angle. */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_equip',type:'multi',q:"What equipment would normally be available to you?",
+        opts:['Smartphone','Camera','Tripod','Adjustable lamp / light','Multiple lights','Polarising filter','Controlled photo area / studio','None of these','Other'],
+        exclusive:['None of these']},
+      {id:'arcv_timeTolerance',type:'single',q:"How much time would you realistically spend documenting one work before it became too burdensome?",
+        opts:['Under 2 minutes','2–5 minutes','5–10 minutes','10–15 minutes','15–30 minutes','More than 30 minutes']},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Faculty or technician':[
       {id:'q1',type:'text',q:"What do you teach, and at what level?"},
@@ -666,7 +812,26 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'who',type:'single',q:"Who decides when the department takes on a new tool or system?",
         opts:['Me','Department head','A committee','Central IT or procurement','Not sure']},
       {id:'budget',type:'single',q:"When does the department's budget for that kind of thing get set?",
-        opts:['Annually, in autumn','Annually, in spring','Rolling / as needed','Not sure']}
+        opts:['Annually, in autumn','Annually, in spring','Rolling / as needed','Not sure']},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         No arcv_institWho/arcv_institNeeds — who/proc already establish who decides and what
+         the department already pays for, which is what those two would otherwise ask. The one
+         genuinely new institutional question is independent assurance, since nothing above
+         asks whether a self-made record would need certifying to be trusted. */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_workflowFit',type:'text',q:"Imagine a system that guides you through photographing an artwork using your phone and one movable light. It tells you where to place the light, checks the capture as you go, and may ask for another image when it needs more evidence. How would you expect that kind of process to fit into your current workflow?"},
+      {id:'arcv_frictionPart',type:'single',q:"Which part of that process would be hardest for you?",
+        opts:['Setting up the phone','Keeping the camera position stable','Moving the light','Following the instructions','Keeping markers/reference material visible','Capturing the back / verso','Spending the extra time','Nothing in particular','Other']},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_institAssurance',type:'single',q:"Would the record need to be independently witnessed, certified or approved by another person to be useful?",
+        opts:['Yes','No','Depends on the use','Not sure']},
+      {id:'arcv_institAssuranceWhy',type:'text',q:"If it depended on the use, what uses would require that extra level of assurance?",
+        showIf:function(a){return a.arcv_institAssurance==='Depends on the use'}},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ],
     'Online marketplace seller':[
       {id:'q1',type:'multi',q:"Where do you sell?",
@@ -685,7 +850,23 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         opts:['Yes, more than once','Yes, once','No']},
       {id:'authx',type:'text',q:"What was the mismatch, and how did it end?",
         showIf:function(a){return a.auth==='Yes, more than once'||a.auth==='Yes, once'}},
-      {id:'q5',type:'text',q:"What do you do to make a buyer confident who can't see the work?"}
+      {id:'q5',type:'text',q:"What do you do to make a buyer confident who can't see the work?"},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         No evidence-trust checklist — auth/authx already probes the exact failure mode
+         (a buyer says the piece didn't match the photos). New ground: could THIS seller
+         realistically run a guided capture per listing, given the volume they already stated. */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_timeTolerance',type:'single',q:"How much time would you realistically spend documenting one work before it became too burdensome?",
+        opts:['Under 2 minutes','2–5 minutes','5–10 minutes','10–15 minutes','15–30 minutes','More than 30 minutes']},
+      {id:'arcv_workflowFit',type:'text',q:"Imagine a system that guides you through photographing an artwork using your phone and one movable light. It tells you where to place the light, checks the capture as you go, and may ask for another image when it needs more evidence. How would you expect that kind of process to fit into your current workflow?"},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']},
+      {id:'arcv_paymentModel',type:'single',q:"If a documentation system saved you meaningful time or helped resolve disputes, how would you expect it to be paid for?",
+        opts:['Per work','Monthly subscription','Annual subscription','Included in another service','Paid by buyer / collector','Paid by institution','I would expect it to be free','Other']}
     ],
     /* v2: this branch had no instrument in v1, so it dropped straight to the
        gate and every row arrived as a bare email with no interpretable role.
@@ -697,7 +878,29 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       {id:'q2',type:'single',q:"Have you ever needed to establish the condition or the identity of a work and struggled to?",
         opts:['Yes','No','Not sure']},
       {id:'q3',type:'text',q:"What happened, and what did you fall back on?",
-        showIf:function(a){return a.q2==='Yes'}}
+        showIf:function(a){return a.q2==='Yes'}},
+      /* v2.1: ARcv research addendum (see Artist's copy of this comment for the full rule).
+         This branch's own instrument is the thinnest (four questions, by design — the
+         comment above it says don't assume the respondent's workflow), so it gets the
+         addendum's fullest institutional treatment: the whole Section 7 pair (who creates
+         the record, what an institution needs to see) that Gallery and Faculty already get
+         part of elsewhere in their own existing questions. */
+      {id:'arcv_beyondPhoto',type:'single',q:"Have you ever needed to know something about a work that ordinary photographs did not tell you?",
+        opts:['Often','Sometimes','Once or twice','Never','Not sure']},
+      {id:'arcv_oneThing',type:'text',q:"If you could reliably document one additional thing about a work beyond ordinary photographs, what would be most useful?"},
+      {id:'arcv_evidenceTrust',type:'multi',q:"When you need to establish that a particular work is the same work that was previously photographed, sold, transported or received, what evidence do you rely on?",
+        opts:['Photographs','Dimensions','Certificate','Invoice / receipt','Edition number','Signature / inscription','Condition report','Inventory / collection record','Labels / stamps','Physical inspection','Other','Nothing specific'],
+        exclusive:['Nothing specific']},
+      {id:'arcv_output',type:'multi',q:"After documenting a work, what would you most want to receive?",
+        opts:['High-quality photographs','A permanent artwork record','Measured dimensions','Condition documentation','A record of the physical surface','A certificate / verification record','Metadata for inventory','Something I can share with buyers','Something I can give an insurer','Something I can give a museum / gallery','Something I can use for future resale','Other']},
+      {id:'arcv_institWho',type:'text',q:"Who would actually be responsible for creating the record?"},
+      {id:'arcv_institNeeds',type:'text',q:"What would an institution need to see before trusting a record created by someone using their own phone?"},
+      {id:'arcv_institAssurance',type:'single',q:"Would the record need to be independently witnessed, certified or approved by another person to be useful?",
+        opts:['Yes','No','Depends on the use','Not sure']},
+      {id:'arcv_institAssuranceWhy',type:'text',q:"If it depended on the use, what uses would require that extra level of assurance?",
+        showIf:function(a){return a.arcv_institAssurance==='Depends on the use'}},
+      {id:'arcv_adoptionBlockers',type:'multi',q:"What are the biggest reasons you would not adopt a system like this?",
+        opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ]
   };
 
