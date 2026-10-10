@@ -38,7 +38,7 @@
   "publisher": {
     "@type": "Organization",
     "name": "Ramati Art Group",
-    "foundingDate": "2018",
+    "foundingDate": "2017",
     "foundingLocation": "Lagos, Nigeria",
     "address": "New York, USA",
     "founder": {
@@ -142,7 +142,7 @@ p{margin:0 0 17px}
 .measure p{color:var(--ink-2)}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   gap:clamp(28px,5vw,72px);align-items:start}
-@media(max-width:860px){.two{grid-template-columns:1fr}}
+@media(max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
 
 /* ---------------------------------------------------------- process --- */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);
@@ -198,7 +198,7 @@ p{margin:0 0 17px}
   font-size:17px;padding:0 22px;cursor:pointer;transition:.18s;align-self:stretch}
 .line .go:hover{background:var(--bronze)}
 @media(max-width:560px){
-  .line{flex-direction:column}
+  .line{flex-direction:column;flex-wrap:nowrap}
   .line .sep{width:auto;height:1px}
   .line-row{border-top:1px solid var(--rule)}
   .line .go{padding:14px 0}
@@ -429,39 +429,51 @@ textarea.fld{min-height:112px;resize:vertical;line-height:1.6}
   <section class="band" id="about">
     <div class="wrap two">
       <div>
-        <p class="eyebrow">About</p>
-        <h2>Ramati Art Group has worked where art meets the technology used to look at it since 2018.</h2>
+        <p class="eyebrow">About · ARcv, pronounced “archive”</p>
+        <h2>We began with a gallery that had no walls.</h2>
       </div>
       <div class="story measure">
         <p>
-          We started in Lagos in 2018 and work from New York. Most of what we
-          have built sits between an artwork and the record somebody keeps of it
-          &mdash; and for years that record was a photograph.
+          In 2017, Adaramati Shogo started Ramati Art Africa in Lagos: Africa’s
+          first online gallery. Virtual exhibitions carried African artists to a
+          world that had rarely seen them. Our Afriuture Art competition put a
+          $2,500 grant behind the next generation, and in 2018 it crowned Julius
+          Agbaje for <em>Visual Reality</em>, with Chief Nike Okundaye, Oliver
+          Enwonwu and Abiodun Olaku on the judging panel.
         </p>
         <p>
-          Photographs stopped being evidence. An image can be generated, edited,
-          or aged convincingly enough that a picture of a painting now settles
-          very little on its own. Paint is a harder thing to forge. You would
-          have to reproduce the object.
+          Through those years we were privileged to work with masters and rising
+          names alike, among them Oliver Enwonwu, Chief Nike Okundaye, Abiodun
+          Olaku, Julius Agbaje, Nissi Ogulu and Ken Nwadiogbu.
         </p>
         <p class="pull">
-          A work is measured when it is made, and measured again when it changes
-          hands. The difference between those measurements is the record.
+          We have evolved beyond showcasing art. The greater value lies in
+          documenting it: the most undocumented body of art in the world, and
+          arguably the most valuable.
         </p>
         <p>
-          ARcv is the instrument for taking those measurements. We built it
-          around one person with a phone and a lamp they move by hand, because
-          most work in the world will never be taken to a laboratory. Our
-          testing so far is mostly one painting, captured over and over, with
-          the rig taken apart and rebuilt between sessions to see whether the
-          numbers hold.
+          What a work was like on the day it was made. Who made it. Where it has
+          been since. Africa holds one of the largest bodies of art that no one has
+          properly documented, and every year work changes hands, travels, ages
+          and is restored, while what we know of it fits in a few photographs and
+          somebody’s memory.
         </p>
         <p>
-          They mostly hold. What the system still cannot do is tell you what a
-          change means &mdash; that judgement stays with the conservator, the
-          registrar and, occasionally, the court.
+          So we are returning with a new purpose. ARcv is a way
+          of keeping that record. One person, a phone and a single lamp moved by
+          hand can capture a work’s surface as it is today. Measure it when it is
+          made, measure it again when it moves, and the difference between the two
+          is the record. It does not replace the conservator, the registrar or the
+          collector’s eye. It gives them firmer ground to stand on. Our testing so
+          far is mostly one painting, captured over and over; the numbers mostly
+          hold, and what they mean stays a human judgement.
         </p>
-        <p class="sig">Adaramati Shogo &middot; Founder, Ramati Art Group</p>
+        <p>
+          A continent’s art cannot be documented by one studio. With you, with the
+          artists, galleries, conservators, handlers, collectors and institutions
+          who know these works best, it can be. <a href="#enrol">Join the journey.</a>
+        </p>
+        <p class="sig">Adaramati Shogo · Founder, Ramati Art Group</p>
       </div>
     </div>
   </section>
@@ -470,18 +482,13 @@ textarea.fld{min-height:112px;resize:vertical;line-height:1.6}
   <section class="band enrol-band" id="enrol">
     <div class="wrap two">
       <div>
-        <p class="eyebrow">Help us build this</p>
+        <p class="eyebrow">Help us write the record</p>
         <h2>We would like to hear from you.</h2>
         <p class="measure" style="color:var(--ink-2)">
-          We are connecting with people across the art world who understand the
-          challenges of documenting and managing collections &mdash; artists,
-          collectors, galleries, conservators and institutions &mdash; to
-          understand their needs, validate our approach and shape something that
-          works in practice.
-        </p>
-        <p class="measure" style="color:var(--ink-2)">
-          Whether you manage a collection, represent artists, care for cultural
-          objects or work with art institutions, your experience can help.
+          We are asking the people who live with these questions every day:
+          artists, conservators, registrars, handlers, insurers, galleries,
+          estates, collectors and scholars. About eight minutes, no right or wrong
+          answers, and we will send you a summary of what we learn.
         </p>
       </div>
 
@@ -506,12 +513,17 @@ textarea.fld{min-height:112px;resize:vertical;line-height:1.6}
                 <option>Art handler or preparator</option>
                 <option>Faculty or technician</option>
                 <option>Online marketplace seller</option>
+                <option>Conservator or conservation scientist</option>
+                <option>Registrar, curator or collections manager</option>
+                <option>Insurance, claims or legal</option>
+                <option>Estate or foundation</option>
                 <option>Other / institutional</option>
               </select>
               <button class="go" id="go" type="button" aria-label="Request early access">&rarr;</button>
             </div>
           </div>
           <p class="note">A private correspondence. One click to stop, at any point.</p>
+          <p class="note">We use your answers to shape ARcv, and we will not sell them. Ask us to delete them any time at hello@arcv.art.</p>
           <p class="done" id="done" role="status" aria-live="polite">Noted.<small id="doneSub">Your address has been noted.</small></p>
 
           <div class="more" id="more" hidden>
@@ -561,7 +573,7 @@ textarea.fld{min-height:112px;resize:vertical;line-height:1.6}
     <p>Your collection. Its record. Its future.</p>
     <div class="meta">
       <span>Ramati Art Group</span>
-      <span>Established 2018, Lagos &middot; now New York</span>
+      <span>Established 2017, Lagos &middot; now New York</span>
       <span><a href="mailto:hello@arcv.art">hello@arcv.art</a></span>
     </div>
     <p class="credit" id="imgCredit">Painting shown: Vincent van Gogh, <em>Self-Portrait with Grey Felt Hat</em>, 1887. Van Gogh Museum, Amsterdam. Public domain, via Wikimedia Commons.</p>
@@ -569,12 +581,14 @@ textarea.fld{min-height:112px;resize:vertical;line-height:1.6}
 </footer>
 
 <script>
-/* Supabase. anon key is INSERT-only on survey_responses (RLS) and can
-   EXECUTE email_seen(), which returns a bare true/false — the key that
-   ships in this HTML can never read the table back, only add to it or
-   ask "have I seen this address before?" */
-var SUPA_URL = "https://bmgffdqeibfmtcgzbasw.supabase.co";
-var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtZ2ZmZHFlaWJmbXRjZ3piYXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5NzQ5NzAsImV4cCI6MjEwMzU1MDk3MH0.K71MvKxTF2_XzT-DiqzBHJJo_0kyYxBoVxWRh1lXMiw";
+/* Survey endpoint. Same origin as this page, so no preflight and no
+   credential ships to the browser at all.
+
+   This replaced a Supabase project whose free tier paused after a week of
+   inactivity. Because the insert below is fire-and-forget and never shows
+   the respondent an error, a paused project looked exactly like success:
+   the page said "Noted." and wrote nothing. The Worker does not sleep. */
+var API = "/api";
 
 (function(){
   var go=document.getElementById('go'), email=document.getElementById('email'),
@@ -591,41 +605,38 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
       extra=document.getElementById('extra'),
       nm=document.getElementById('nm'), wa=document.getElementById('wa'),
       em2=document.getElementById('em2'), go2=document.getElementById('go2');
-  function ok(v){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
 
-  function supaHeaders(extra){
-    var h={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
-    if(extra) for(var k in extra) h[k]=extra[k];
-    return h;
-  }
-
-  /* The one call worth waiting on, so it's capped at 3s. A timeout or any
-     other failure resolves to "not a duplicate" — a stray duplicate row
-     is trivial to dedupe later on email_norm; a respondent turned away by
-     a slow network is not recoverable. */
+  /* The one call worth waiting on, so it stays capped at 3s. A timeout or any
+     other failure resolves to "not a duplicate" — a stray duplicate row is
+     trivial to dedupe later on email_norm; a respondent turned away by a slow
+     network is not recoverable. */
   function emailSeen(addr){
     var ctrl=(typeof AbortController!=='undefined')?new AbortController():null;
     var t=ctrl?setTimeout(function(){ctrl.abort();},3000):null;
-    return fetch(SUPA_URL+'/rest/v1/rpc/email_seen',{
-      method:'POST', headers:supaHeaders(), signal:ctrl?ctrl.signal:undefined,
-      body:JSON.stringify({p_email:addr})
-    }).then(function(r){ if(t)clearTimeout(t); return r.ok?r.json():false; })
+    return fetch(API+'/email-seen',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      signal:ctrl?ctrl.signal:undefined,
+      body:JSON.stringify({email:addr})
+    }).then(function(r){ if(t)clearTimeout(t); return r.ok?r.json():null; })
+      .then(function(d){ return !!(d&&d.seen); })
       .catch(function(){ if(t)clearTimeout(t); return false; });
   }
 
-  /* Fire-and-forget with one retry. Never blocks the UI, never surfaces
-     a failure to the respondent — by the time this runs they've already
-     seen the success state. */
-  function supaInsert(row,isRetry){
-    fetch(SUPA_URL+'/rest/v1/survey_responses',{
-      method:'POST', headers:supaHeaders({Prefer:'return=minimal'}),
+  /* Fire-and-forget with one retry. Never blocks the UI, never surfaces a
+     failure to the respondent — by the time this runs they have already seen
+     the success state. */
+  function saveRow(row,isRetry){
+    fetch(API+'/response',{
+      method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify(row)
     }).then(function(r){
-      if(!r.ok && !isRetry) setTimeout(function(){ supaInsert(row,true); },1500);
+      if(!r.ok && !isRetry) setTimeout(function(){ saveRow(row,true); },1500);
     }).catch(function(){
-      if(!isRetry) setTimeout(function(){ supaInsert(row,true); },1500);
+      if(!isRetry) setTimeout(function(){ saveRow(row,true); },1500);
     });
   }
+
+  function ok(v){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())}
 
   /* Everything here is already in the browser. None of it costs a field,
      and country and source are what tell you which market answered. */
@@ -1091,6 +1102,47 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
         opts:['Too much time','Too complicated',"Requires equipment I don't have",'Requires physical setup',"Doesn't fit my workflow",'Cost','Data/privacy concerns','I already have a system',"I don't see enough benefit",'Other']}
     ]
   };
+  /* v2.2 — four tracks for the people the survey previously dropped into "Other / institutional",
+     plus three demography questions on every track. New ids only; no existing id is renumbered. */
+  var shared=SURVEYS['Other / institutional'].filter(function(q){return q.id==='arcv_beyondPhoto'||q.id==='arcv_oneThing';});
+  SURVEYS['Conservator or conservation scientist']=[
+    {id:'q1',type:'text',q:"Walk me through the last condition report you wrote, from first look to filing."},
+    {id:'q2',type:'text',q:"How long does one report take, and which part takes longest?"},
+    {id:'q3',type:'single',q:"Has a report of yours ever been questioned, or compared with a later state of the work?",opts:['Yes','No','Not sure']},
+    {id:'q4',type:'text',q:"What happened?",showIf:function(a){return a.q3==='Yes'}},
+    {id:'q5',type:'multi',q:"What do you follow when documenting condition?",
+      opts:['My institution’s template','My own template','International guidelines (for example ICOM-CC or AIC)','A national or regional standard','No fixed standard','Other'],exclusive:['No fixed standard']},
+    {id:'q6',type:'text',q:"What would you need to see before trusting a record of a surface made by someone else with a phone?"}
+  ].concat(shared);
+  SURVEYS['Registrar, curator or collections manager']=[
+    {id:'q1',type:'text',q:"When a work returns from loan or transit, what do you compare it against?"},
+    {id:'q2',type:'single',q:"In the last two years, has a work come back and been questioned?",opts:['Yes','No','Not sure']},
+    {id:'q3',type:'text',q:"How was it settled, and what did it cost in time or money?",showIf:function(a){return a.q2==='Yes'}},
+    {id:'q4',type:'text',q:"Who creates condition records in your organisation, and who has to accept them?"},
+    {id:'q5',type:'single',q:"Roughly how many works do you check in or out in a month?",opts:['Under 10','10–50','51–200','201–1,000','More than 1,000']}
+  ].concat(shared);
+  SURVEYS['Insurance, claims or legal']=[
+    {id:'q1',type:'multi',q:"What evidence of a work’s earlier condition does a claim file usually contain?",
+      opts:['Photographs','A condition report','An appraisal or valuation','Provenance documents','Shipping or handling records','The owner’s statement','An expert opinion','Little or nothing on earlier condition','Other'],exclusive:['Little or nothing on earlier condition']},
+    {id:'q2',type:'text',q:"When a claim is disputed, what decides it, and how long does that usually take?"},
+    {id:'q3',type:'text',q:"Who bears the cost when the earlier condition cannot be shown?"},
+    {id:'q4',type:'single',q:"Would you accept a record made by the owner, or only one made by an independent party?",
+      opts:['Only an independent party','The owner is acceptable if the method is transparent','It depends on the value','Not sure']},
+    {id:'q5',type:'single',q:"Roughly how many art or collectables claims do you handle in a year?",opts:['None','1–5','6–20','21–100','More than 100']}
+  ].concat(shared);
+  SURVEYS['Estate or foundation']=[
+    {id:'q1',type:'text',q:"How do you currently record the state of each work in the archive or catalogue?"},
+    {id:'q2',type:'single',q:"How often are you asked to confirm whether a work is genuine or in its original state?",opts:['Never','Once or twice a year','Several times a year','Monthly or more','Not sure']},
+    {id:'q3',type:'text',q:"Who asks you, and what do they accept as proof?"},
+    {id:'q4',type:'text',q:"What happens to this knowledge when the person who holds it moves on?"}
+  ].concat(shared);
+  var DEMO=[
+    {id:'demo_country',type:'text',q:"Which country are you based in?"},
+    {id:'demo_org',type:'single',q:"What best describes your organisation?",
+      opts:['Independent or self-employed','Gallery or dealer','Auction house','Museum or public collection','Estate, foundation or trust','Insurer, broker or adjuster','Law firm','University or school','Logistics or shipping','Other']},
+    {id:'demo_years',type:'single',q:"How many years have you been in your role?",opts:['Under 2','2–5','6–10','11–20','More than 20']}
+  ];
+  Object.keys(SURVEYS).forEach(function(k){ SURVEYS[k]=SURVEYS[k].concat(DEMO); });
 
   /* Registrars, conservators, shippers, insurers and the like are interviews,
      not forms — no blind instrument for them, straight to the ask. */
@@ -1217,7 +1269,7 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
      is still captured under 'answered'. */
   function submitSurvey(withContact){
     if(withContact){
-      supaInsert({
+      saveRow({
         stage:'enriched',
         email:payload.email,
         role:role,
@@ -1230,7 +1282,7 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
          id may never be renumbered or reworded in place. */
       var out={_v:2};
       for(var k in answers) if(Object.prototype.hasOwnProperty.call(answers,k)) out[k]=answers[k];
-      supaInsert({stage:'answered', email:payload.email, role:role, answers:out});
+      saveRow({stage:'answered', email:payload.email, role:role, answers:out});
     }
   }
 
@@ -1294,7 +1346,7 @@ var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
     emailSeen(norm).then(function(seen){
       if(seen){ reject(); return; }
-      supaInsert({stage:'signup', email:e, role:w, context:c});
+      saveRow({stage:'signup', email:e, role:w, context:c});
       markUsed(norm);
       done(null,w,localPayload);
     });
