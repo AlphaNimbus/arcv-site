@@ -380,14 +380,17 @@ textarea.fld{min-height:104px;resize:vertical}
 <script>const menu=document.getElementById('menu'),links=document.getElementById('navlinks');menu.addEventListener('click',()=>{const open=links.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Close navigation':'Open navigation');menu.textContent=open?'×':'☰'});links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{links.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.textContent='☰'}));</script>
 
 <script>
-/* Survey endpoint. Same origin as this page, so no preflight and no
-   credential ships to the browser at all.
+/* Supabase. anon key is INSERT-only on survey_responses (RLS) and can
+   EXECUTE email_seen(), which returns a bare true/false — the key that
+   ships in this HTML can never read the table back, only add to it or
+   ask "have I seen this address before?"
 
-   This replaced a Supabase project whose free tier paused after a week of
-   inactivity. Because the insert below is fire-and-forget and never shows
-   the respondent an error, a paused project looked exactly like success:
-   the page said "Noted." and wrote nothing. The Worker does not sleep. */
-var API = "/api";
+   The free tier pauses a project after a week without activity. The insert
+   below is fire-and-forget and never shows the respondent an error, so a
+   paused project looks exactly like success: the page says "Noted." and
+   writes nothing. Check the project is awake before sending people here. */
+var SUPA_URL = "https://bmgffdqeibfmtcgzbasw.supabase.co";
+var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJtZ2ZmZHFlaWJmbXRjZ3piYXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5NzQ5NzAsImV4cCI6MjEwMzU1MDk3MH0.K71MvKxTF2_XzT-DiqzBHJJo_0kyYxBoVxWRh1lXMiw";
 
 (function(){
   var go=document.getElementById('go'), email=document.getElementById('email'),
@@ -405,6 +408,12 @@ var API = "/api";
       nm=document.getElementById('nm'), wa=document.getElementById('wa'),
       em2=document.getElementById('em2'), go2=document.getElementById('go2');
 
+  function supaHeaders(extra){
+    var h={apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'};
+    if(extra) for(var k in extra) h[k]=extra[k];
+    return h;
+  }
+
   /* The one call worth waiting on, so it stays capped at 3s. A timeout or any
      other failure resolves to "not a duplicate" — a stray duplicate row is
      trivial to dedupe later on email_norm; a respondent turned away by a slow
@@ -412,12 +421,11 @@ var API = "/api";
   function emailSeen(addr){
     var ctrl=(typeof AbortController!=='undefined')?new AbortController():null;
     var t=ctrl?setTimeout(function(){ctrl.abort();},3000):null;
-    return fetch(API+'/email-seen',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      signal:ctrl?ctrl.signal:undefined,
-      body:JSON.stringify({email:addr})
-    }).then(function(r){ if(t)clearTimeout(t); return r.ok?r.json():null; })
-      .then(function(d){ return !!(d&&d.seen); })
+    return fetch(SUPA_URL+'/rest/v1/rpc/email_seen',{
+      method:'POST', headers:supaHeaders(), signal:ctrl?ctrl.signal:undefined,
+      body:JSON.stringify({p_email:addr})
+    }).then(function(r){ if(t)clearTimeout(t); return r.ok?r.json():false; })
+      .then(function(d){ return d===true; })
       .catch(function(){ if(t)clearTimeout(t); return false; });
   }
 
@@ -425,8 +433,8 @@ var API = "/api";
      failure to the respondent — by the time this runs they have already seen
      the success state. */
   function saveRow(row,isRetry){
-    fetch(API+'/response',{
-      method:'POST', headers:{'Content-Type':'application/json'},
+    fetch(SUPA_URL+'/rest/v1/survey_responses',{
+      method:'POST', headers:supaHeaders({Prefer:'return=minimal'}),
       body:JSON.stringify(row)
     }).then(function(r){
       if(!r.ok && !isRetry) setTimeout(function(){ saveRow(row,true); },1500);
